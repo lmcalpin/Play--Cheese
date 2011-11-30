@@ -1,0 +1,5 @@
+h1. play--cheese
+
+play--cheese (http://github.com/lmcalpin/Play--Cheese) is an (unfinished) "Play! framework module":www.playframework.org 
+that adds some basic support for integration with the "CheddarGetter":https://cheddargetter.com/ subscription 
+management service's API.

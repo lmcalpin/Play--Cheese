@@ -1,0 +1,17 @@
+.classpath
+.project
+bin
+dist
+eclipse
+.tmp_*.html.*~
+.svn
+*.pyc
+module.bat
+.settings
+build.bat
+test-result
+doc
+logs
+tmp
+lib
+test/TestService.java
