@@ -14,4 +14,4 @@ doc
 logs
 tmp
 lib
-test/TestService.java
+test/*.java

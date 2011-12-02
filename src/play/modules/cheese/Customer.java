@@ -8,7 +8,6 @@ import java.util.Map;
 import org.w3c.dom.Node;
 
 import play.Logger;
-import play.exceptions.UnexpectedException;
 import play.libs.WS;
 import play.libs.WS.HttpResponse;
 import play.libs.XPath;
@@ -50,28 +49,18 @@ public class Customer {
         if (ccZip != null)
             params.put("ccZip", ccZip);
         String url = Service.ROOT + "/customers/edit-subscription/productCode/" + service.getProductCode() + "/code/" + code;
-        System.out.println(url);
         HttpResponse resp = WS
                 .url(url)
                 .params(params).authenticate(service.getUser(), service.getPassword()).post();
-        Logger.info("Status = %d", resp.getStatus());
-        if (resp.getStatus() != 200) {
-            System.out.println(resp.getString());
-            throw new UnexpectedException("Oopsies...");
-        }
+        CheddarGetterException.validate(resp);
     }
 
     public void cancel() {
         String url = Service.ROOT + "/customers/cancel/productCode/" + service.getProductCode() + "/code/" + code;
-        System.out.println(url);
         HttpResponse resp = WS
                 .url(url)
                 .authenticate(service.getUser(), service.getPassword()).get();
-        Logger.info("Status = %d", resp.getStatus());
-        if (resp.getStatus() != 200) {
-            System.out.println(resp.getString());
-            throw new UnexpectedException("Oopsies...");
-        }
+        CheddarGetterException.validate(resp);
     }
 
     public String getCode() {

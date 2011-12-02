@@ -36,6 +36,7 @@ public class Service {
 		HttpResponse resp = WS.url(
 				ROOT + "/customers/get/productCode/" + productCode + "/code/"
 						+ custCode).authenticate(user, password).get();
+        CheddarGetterException.validate(resp);
 		return parseCustomer(resp);
 	}
 
@@ -45,7 +46,6 @@ public class Service {
 		Node customer = XPath.selectNode("//customer", root);
 		if (customer == null)
 			return null;
-		System.out.println(resp.getString());
 		return new Customer(this, customer);
 	}
 	
@@ -57,7 +57,7 @@ public class Service {
 		params.put("email", email);
 		params.put("subscription[planCode]", "FREE");
 		HttpResponse resp = WS.url(ROOT + "/customers/new/productCode/" + productCode).params(params).authenticate(user, password).post();
-		Logger.info("Status = %d", resp.getStatus());
+        CheddarGetterException.validate(resp);
 		return parseCustomer(resp);
 	}
 
