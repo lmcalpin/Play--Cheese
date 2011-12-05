@@ -26,41 +26,39 @@ public class Customer {
         this.firstName = XPath.selectText("firstName", node);
         this.lastName = XPath.selectText("lastName", node);
         this.email = XPath.selectText("email", node);
-        List<Node> subscriptionNodes = XPath.selectNodes(
-                "subscriptions/subscription", node);
+        List<Node> subscriptionNodes = XPath.selectNodes("subscriptions/subscription", node);
         for (Node subscriptionNode : subscriptionNodes) {
             this.subscriptions.add(new Subscription(subscriptionNode));
         }
     }
 
-    public void subscribe(String plan, String ccNumber, String ccExpiration) {
-        subscribe(plan, ccNumber, ccExpiration, null, null);
+    public void subscribe(String plan, String ccNumber, String expiration) {
+        String[] expirationSplit = expiration.split("/");
+        int expireMo = Integer.parseInt(expirationSplit[0]);
+        int expireYear = Integer.parseInt(expirationSplit[1]);
+        subscribe(plan, new CreditCard(firstName, lastName, ccNumber, expireMo, expireYear));
     }
 
-    public void subscribe(String plan, String ccNumber, String ccExpiration, String ccCardCode, String ccZip) {
+    public void subscribe(String plan, String ccNumber, int expireMo, int expireYear) {
+        subscribe(plan, new CreditCard(firstName, lastName, ccNumber, expireMo, expireYear));
+    }
+
+    public void subscribe(String plan, CreditCard card) {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("planCode", plan);
-        params.put("ccNumber", ccNumber);
-        params.put("ccExpiration", ccExpiration);
-        if (ccCardCode != null)
-            params.put("ccCardCode", ccCardCode);
-        params.put("ccFirstName", firstName);
-        params.put("ccLastName", lastName);
-        if (ccZip != null)
-            params.put("ccZip", ccZip);
-        String url = Service.ROOT + "/customers/edit-subscription/productCode/" + service.getProductCode() + "/code/" + code;
-        HttpResponse resp = WS
-                .url(url)
-                .params(params).authenticate(service.getUser(), service.getPassword()).post();
-        CheddarGetterException.validate(resp);
+        params.put("ccFirstName", card.getFirstName());
+        params.put("ccLastName", card.getLastName());
+        params.put("ccNumber", card.getNumber());
+        params.put("ccExpiration", card.getExpireMonth() + "/" + card.getExpireYear());
+        if (card.getCode() != null)
+            params.put("ccCardCode", card.getCode());
+        if (card.getZip() != null)
+            params.put("ccZip", card.getZip());
+        service.post("/customers/edit-subscription/productCode/" + service.getProductCode() + "/code/" + code, params);
     }
 
     public void cancel() {
-        String url = Service.ROOT + "/customers/cancel/productCode/" + service.getProductCode() + "/code/" + code;
-        HttpResponse resp = WS
-                .url(url)
-                .authenticate(service.getUser(), service.getPassword()).get();
-        CheddarGetterException.validate(resp);
+        service.get("/customers/cancel/productCode/" + service.getProductCode() + "/code/" + code); 
     }
 
     public String getCode() {

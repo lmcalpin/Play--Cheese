@@ -9,7 +9,7 @@ import play.libs.XPath;
 public class CheddarGetterException extends RuntimeException {
     private String code;
     private String auxCode;
-    
+
     public CheddarGetterException() {
         super();
     }
@@ -25,11 +25,11 @@ public class CheddarGetterException extends RuntimeException {
     public CheddarGetterException(Throwable cause) {
         super(cause);
     }
-    
+
     public String getCode() {
         return code;
     }
-    
+
     public String getAuxCode() {
         return auxCode;
     }
