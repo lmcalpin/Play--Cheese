@@ -52,11 +52,7 @@ public class Plan {
         this.createdDatetime  = XPathUtil.selectDate("createdDatetime", node);
         this.recurringChargeCode  = XPathUtil.selectText("recurringChargeCode", node);
         this.recurringChargeAmount  = XPathUtil.selectDecimal("recurringChargeAmount", node);
-        this.items = new ArrayList<Item>();
-        List<Node> itemNodes = XPath.selectNodes("items/item", node);
-        for (Node itemNode : itemNodes) {
-            this.items.add(new Item(service, itemNode));
-        }
+        this.items = XPathUtil.selectList("items/item", node, service, Item.class);
     }
 
     public String getBillingFrequency() {

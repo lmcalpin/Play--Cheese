@@ -24,10 +24,7 @@ public class Customer {
         this.firstName = XPathUtil.selectText("firstName", node);
         this.lastName = XPathUtil.selectText("lastName", node);
         this.email = XPathUtil.selectText("email", node);
-        List<Node> subscriptionNodes = XPath.selectNodes("subscriptions/subscription", node);
-        for (Node subscriptionNode : subscriptionNodes) {
-            this.subscriptions.add(new Subscription(subscriptionNode));
-        }
+        this.subscriptions = XPathUtil.selectList("subscriptions/subscription", node, service, Subscription.class);
     }
 
     public void cancel() {
@@ -50,12 +47,14 @@ public class Customer {
         return lastName;
     }
 
-    public List<String> getPlans() {
+    public List<String> getActivePlanCodes() {
         List<String> plans = new ArrayList<String>();
         for (Subscription sub : subscriptions) {
             if (sub.isCanceled())
                 continue;
-            plans.addAll(sub.getPlans());
+            for (Plan plan : sub.getPlans()) {
+                plans.add(plan.getCode());
+            }
         }
         return plans;
     }
@@ -64,8 +63,8 @@ public class Customer {
         return subscriptions;
     }
 
-    public boolean hasPlan(String plan) {
-        return getPlans().contains(plan);
+    public boolean hasActivePlanByCode(String plan) {
+        return getActivePlanCodes().contains(plan);
     }
 
     public void subscribe(String plan, CreditCard card) {

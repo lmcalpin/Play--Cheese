@@ -1,6 +1,7 @@
 package play.modules.cheese;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.w3c.dom.Node;
@@ -15,23 +16,28 @@ public class Subscription {
     private String ccType;
     private String ccLastFour;
     private String ccExpirationDate;
-    private List<String> plans = new ArrayList<String>();
+    private List<Plan> plans;
+    private List<Item> items;
+    private List<Invoice> invoices;
     private boolean canceled;
+    private Date canceledDateTime;
 
-    public Subscription(Node node) {
+    public Subscription(Service service, Node node) {
         this.id = XPathUtil.selectText("@id", node);
         this.ccFirstName = XPathUtil.selectText("ccFirstName", node);
         this.ccLastName = XPathUtil.selectText("ccLastName", node);
         this.ccType = XPathUtil.selectText("ccType", node);
         this.ccLastFour = XPathUtil.selectText("ccLastFour", node);
         this.ccExpirationDate = XPathUtil.selectText("ccExpirationDate", node);
-        List<Node> planNodes = XPath.selectNodes("plans/plan", node);
-        for (Node planNode : planNodes) {
-            String planName = XPathUtil.selectText("name", planNode);
-            this.plans.add(planName);
-        }
-        String canceledDateTime = XPathUtil.selectText("canceledDatetime", node);
-        canceled = canceledDateTime != null && canceledDateTime.length() > 0;
+        this.plans = XPathUtil.selectList("plans/plan", node, service, Plan.class);
+        this.items = XPathUtil.selectList("items/item", node, service, Item.class);
+        this.invoices = XPathUtil.selectList("invoices/invoice", node, service, Invoice.class);
+        this.canceledDateTime = XPathUtil.selectDate("canceledDatetime", node);
+        this.canceled = canceledDateTime != null;
+    }
+
+    public Date getCanceledDateTime() {
+        return canceledDateTime;
     }
 
     public String getCcExpirationDate() {
@@ -58,7 +64,15 @@ public class Subscription {
         return id;
     }
 
-    public List<String> getPlans() {
+    public List<Invoice> getInvoices() {
+        return invoices;
+    }
+
+    public List<Item> getItems() {
+        return items;
+    }
+
+    public List<Plan> getPlans() {
         return plans;
     }
 
