@@ -26,6 +26,19 @@ You can retrieve the customer you just created by calling getCustomer:
 bc. 
     Customer customer = sub.getCustomer("customerCode");
     
+h2. subscriptions
+
+A customer can subscribe to one or more of your product plans:
+
+bc. 
+    customer.subscribe(planCode, creditCard);
+    
+At any time, you can cancel the customer's current subscription plan.  This change takes effect IMMEDIATELY.
+
+bc. 
+    customer.cancel();
+    
+
 h2. usage tracking
   
 To track item usage, call addItemUsage or setItemUsage on the Customer object.  This is used to track how much of

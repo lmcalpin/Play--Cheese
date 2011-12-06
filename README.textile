@@ -4,19 +4,55 @@ play--cheese (http://github.com/lmcalpin/Play--Cheese) is a "Play! framework mod
 that adds some basic support for integration with the "CheddarGetter":http://zfer.us/KIt2E subscription 
 management service's API.
 
-h2. example usage
+h2. create a customer
 
-bc.. 
-    Service sub = new Service("account", "password", "service");
+To use Play--Cheese, you must first configure your service.  This requires your CheddarGetter! credentials and
+the product code for your service.
+
+bc.  
+    Service sub = new Service("account", "password", "productCode");
+    
+Then you can create a customer by simply calling addCustomer and providing a plan code that you set up on the
+CheddarGetter! admin console.
+
+bc. 
+    Customer customer = sub.addCustomer(customerCode, firstName, lastName, email, planCode);
+    Customer customer = sub.addCustomer(customerCode, firstName, lastName, email, planCode, creditCard);
+
+You do not have to take in a credit card if the plan is free.  
+
+You can retrieve the customer you just created by calling getCustomer:
+    
+bc. 
     Customer customer = sub.getCustomer("customerCode");
     
-    // create a customer
-    customer = sub.addCustomer(customerCode, firstName, lastName, email);
+h2. subscriptions
+
+A customer can subscribe to one or more of your product plans:
+
+bc. 
+    customer.subscribe(planCode, creditCard);
     
-    // get a list of their subscriptions
-    List<Subscription> subs = customer.getSubscriptions();
+At any time, you can cancel the customer's current subscription plan.  This change takes effect IMMEDIATELY.
+
+bc. 
+    customer.cancel();
     
-    // subscribe to a new plan
-    customer.subscribe("PREMIUM", ccNumber, ccExpiration);
+
+h2. usage tracking
+  
+To track item usage, call addItemUsage or setItemUsage on the Customer object.  This is used to track how much of
+a limited quantity of a particular feature that a customer has used.  For example, if you have a SocialMobileLocal
+startup that allows users 500 SpecialDealNotifications a month, you would set up a plan with an item with a limited
+quantity of 500, and every time the customer received a SuperDuperDealNotification, you would increment their use
+of that Item as follows:
+
+bc. 
+    customer.addItemUsage("SuperDuperDealNotification", BigDecimal.ONE);
+
+You can also just set the full amount as well:
+
+bc. 
+    customer.setItemUsage("SuperDuperDealNotification", new BigDecimal("499"));
     
-p. 
+   
