@@ -1,5 +1,22 @@
 h1. play--cheese
 
 play--cheese (http://github.com/lmcalpin/Play--Cheese) is an (unfinished) "Play! framework module":www.playframework.org 
-that adds some basic support for integration with the "CheddarGetter":https://cheddargetter.com/ subscription 
+that adds some basic support for integration with the "CheddarGetter":http://zfer.us/KIt2E subscription 
 management service's API.
+
+h2. example usage
+
+bc.. 
+    Service sub = new Service("account", "password", "service");
+    Customer customer = sub.getCustomer("customerCode");
+    
+    // create a customer
+    customer = sub.addCustomer(customerCode, firstName, lastName, email);
+    
+    // get a list of their subscriptions
+    List<Subscription> subs = customer.getSubscriptions();
+    
+    // subscribe to a new plan
+    customer.subscribe("PREMIUM", ccNumber, ccExpiration);
+    
+p. 

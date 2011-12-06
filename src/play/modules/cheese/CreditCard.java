@@ -9,12 +9,6 @@ public class CreditCard {
     private String code;
     private String zip;
 
-    public CreditCard(String firstName, String lastName, String number, int expireMonth, int expireYear, String code, String zip) {
-        this(firstName, lastName, number, expireMonth, expireYear);
-        this.code = code;
-        this.zip = zip;
-    }
-    
     public CreditCard(String firstName, String lastName, String number, int expireMonth, int expireYear) {
         super();
         this.firstName = firstName;
@@ -24,6 +18,21 @@ public class CreditCard {
         this.expireYear = expireYear;
     }
     
+    public CreditCard(String firstName, String lastName, String number, int expireMonth, int expireYear, String code, String zip) {
+        this(firstName, lastName, number, expireMonth, expireYear);
+        this.code = code;
+        this.zip = zip;
+    }
+    
+    public String getCode() {
+        return code;
+    }
+    public int getExpireMonth() {
+        return expireMonth;
+    }
+    public int getExpireYear() {
+        return expireYear;
+    }
     public String getFirstName() {
         return firstName;
     }
@@ -32,15 +41,6 @@ public class CreditCard {
     }
     public String getNumber() {
         return number;
-    }
-    public int getExpireMonth() {
-        return expireMonth;
-    }
-    public int getExpireYear() {
-        return expireYear;
-    }
-    public String getCode() {
-        return code;
     }
     public String getZip() {
         return zip;

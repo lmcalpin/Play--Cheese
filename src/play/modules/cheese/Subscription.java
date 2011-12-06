@@ -5,9 +5,8 @@ import java.util.List;
 
 import org.w3c.dom.Node;
 
-import antlr.StringUtils;
-
 import play.libs.XPath;
+import play.modules.cheese.util.XPathUtil;
 
 public class Subscription {
     private String id;
@@ -20,27 +19,31 @@ public class Subscription {
     private boolean canceled;
 
     public Subscription(Node node) {
-        this.id = XPath.selectText("@id", node);
-        this.ccFirstName = XPath.selectText("ccFirstName", node);
-        this.ccLastName = XPath.selectText("ccLastName", node);
-        this.ccType = XPath.selectText("ccType", node);
-        this.ccLastFour = XPath.selectText("ccLastFour", node);
-        this.ccExpirationDate = XPath.selectText("ccExpirationDate", node);
+        this.id = XPathUtil.selectText("@id", node);
+        this.ccFirstName = XPathUtil.selectText("ccFirstName", node);
+        this.ccLastName = XPathUtil.selectText("ccLastName", node);
+        this.ccType = XPathUtil.selectText("ccType", node);
+        this.ccLastFour = XPathUtil.selectText("ccLastFour", node);
+        this.ccExpirationDate = XPathUtil.selectText("ccExpirationDate", node);
         List<Node> planNodes = XPath.selectNodes("plans/plan", node);
         for (Node planNode : planNodes) {
-            String planName = XPath.selectText("name", planNode);
+            String planName = XPathUtil.selectText("name", planNode);
             this.plans.add(planName);
         }
-        String canceledDateTime = XPath.selectText("canceledDatetime", node);
+        String canceledDateTime = XPathUtil.selectText("canceledDatetime", node);
         canceled = canceledDateTime != null && canceledDateTime.length() > 0;
     }
 
-    public String getId() {
-        return id;
+    public String getCcExpirationDate() {
+        return ccExpirationDate;
     }
 
     public String getCcFirstName() {
         return ccFirstName;
+    }
+
+    public String getCcLastFour() {
+        return ccLastFour;
     }
 
     public String getCcLastName() {
@@ -51,12 +54,8 @@ public class Subscription {
         return ccType;
     }
 
-    public String getCcLastFour() {
-        return ccLastFour;
-    }
-
-    public String getCcExpirationDate() {
-        return ccExpirationDate;
+    public String getId() {
+        return id;
     }
 
     public List<String> getPlans() {

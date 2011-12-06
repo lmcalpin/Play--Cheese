@@ -4,7 +4,7 @@ import org.w3c.dom.Node;
 
 import play.Logger;
 import play.libs.WS.HttpResponse;
-import play.libs.XPath;
+import play.modules.cheese.util.XPathUtil;
 
 public class CheddarGetterException extends RuntimeException {
     private String code;
@@ -14,24 +14,16 @@ public class CheddarGetterException extends RuntimeException {
         super();
     }
 
-    public CheddarGetterException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
     public CheddarGetterException(String message) {
         super(message);
     }
 
+    public CheddarGetterException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
     public CheddarGetterException(Throwable cause) {
         super(cause);
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public String getAuxCode() {
-        return auxCode;
     }
 
     public static void validate(HttpResponse resp) {
@@ -40,12 +32,20 @@ public class CheddarGetterException extends RuntimeException {
         Logger.debug("Response Status = %d", resp.getStatus());
         System.out.println(resp.getString());
         Node node = resp.getXml().getFirstChild();
-        String errorMessage = XPath.selectText("text()", node);
-        String code = XPath.selectText("@code", node);
-        String auxCode = XPath.selectText("@auxCode", node);
+        String errorMessage = XPathUtil.selectText("text()", node);
+        String code = XPathUtil.selectText("@code", node);
+        String auxCode = XPathUtil.selectText("@auxCode", node);
         CheddarGetterException e = new CheddarGetterException(errorMessage);
         e.code = code;
         e.auxCode = auxCode;
         throw e;
+    }
+
+    public String getAuxCode() {
+        return auxCode;
+    }
+
+    public String getCode() {
+        return code;
     }
 }

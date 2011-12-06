@@ -7,10 +7,8 @@ import java.util.Map;
 
 import org.w3c.dom.Node;
 
-import play.Logger;
-import play.libs.WS;
-import play.libs.WS.HttpResponse;
 import play.libs.XPath;
+import play.modules.cheese.util.XPathUtil;
 
 public class Customer {
     private String code;
@@ -22,25 +20,52 @@ public class Customer {
 
     public Customer(Service service, Node node) {
         this.service = service;
-        this.code = XPath.selectText("@code", node);
-        this.firstName = XPath.selectText("firstName", node);
-        this.lastName = XPath.selectText("lastName", node);
-        this.email = XPath.selectText("email", node);
+        this.code = XPathUtil.selectText("@code", node);
+        this.firstName = XPathUtil.selectText("firstName", node);
+        this.lastName = XPathUtil.selectText("lastName", node);
+        this.email = XPathUtil.selectText("email", node);
         List<Node> subscriptionNodes = XPath.selectNodes("subscriptions/subscription", node);
         for (Node subscriptionNode : subscriptionNodes) {
             this.subscriptions.add(new Subscription(subscriptionNode));
         }
     }
 
-    public void subscribe(String plan, String ccNumber, String expiration) {
-        String[] expirationSplit = expiration.split("/");
-        int expireMo = Integer.parseInt(expirationSplit[0]);
-        int expireYear = Integer.parseInt(expirationSplit[1]);
-        subscribe(plan, new CreditCard(firstName, lastName, ccNumber, expireMo, expireYear));
+    public void cancel() {
+        service.get("/customers/cancel/productCode/" + service.getProductCode() + "/code/" + code); 
     }
 
-    public void subscribe(String plan, String ccNumber, int expireMo, int expireYear) {
-        subscribe(plan, new CreditCard(firstName, lastName, ccNumber, expireMo, expireYear));
+    public String getCode() {
+        return code;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public List<String> getPlans() {
+        List<String> plans = new ArrayList<String>();
+        for (Subscription sub : subscriptions) {
+            if (sub.isCanceled())
+                continue;
+            plans.addAll(sub.getPlans());
+        }
+        return plans;
+    }
+
+    public List<Subscription> getSubscriptions() {
+        return subscriptions;
+    }
+
+    public boolean hasPlan(String plan) {
+        return getPlans().contains(plan);
     }
 
     public void subscribe(String plan, CreditCard card) {
@@ -57,41 +82,14 @@ public class Customer {
         service.post("/customers/edit-subscription/productCode/" + service.getProductCode() + "/code/" + code, params);
     }
 
-    public void cancel() {
-        service.get("/customers/cancel/productCode/" + service.getProductCode() + "/code/" + code); 
+    public void subscribe(String plan, String ccNumber, int expireMo, int expireYear) {
+        subscribe(plan, new CreditCard(firstName, lastName, ccNumber, expireMo, expireYear));
     }
 
-    public String getCode() {
-        return code;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public List<Subscription> getSubscriptions() {
-        return subscriptions;
-    }
-
-    public List<String> getPlans() {
-        List<String> plans = new ArrayList<String>();
-        for (Subscription sub : subscriptions) {
-            if (sub.isCanceled())
-                continue;
-            plans.addAll(sub.getPlans());
-        }
-        return plans;
-    }
-
-    public boolean hasPlan(String plan) {
-        return getPlans().contains(plan);
+    public void subscribe(String plan, String ccNumber, String expiration) {
+        String[] expirationSplit = expiration.split("/");
+        int expireMo = Integer.parseInt(expirationSplit[0]);
+        int expireYear = Integer.parseInt(expirationSplit[1]);
+        subscribe(plan, new CreditCard(firstName, lastName, ccNumber, expireMo, expireYear));
     }
 }

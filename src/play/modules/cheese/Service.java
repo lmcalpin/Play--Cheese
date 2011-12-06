@@ -21,30 +21,16 @@ public class Service {
 
     public static String ROOT = "https://cheddargetter.com/xml";
 
-    public Service(String user, String password, String productCode) {
-        this.user = user;
-        this.password = password;
-        this.productCode = productCode;
-    }
-
     public Service(String productCode) {
         this.user = (String) Play.configuration.get("cg.user");
         this.password = (String) Play.configuration.get("cg.password");
         this.productCode = productCode;
     }
 
-    public Customer getCustomer(String custCode) {
-        HttpResponse resp = get("/customers/get/productCode/" + productCode + "/code/" + custCode);
-        return parseCustomer(resp);
-    }
-
-    private Customer parseCustomer(HttpResponse resp) {
-        Document doc = resp.getXml();
-        Element root = doc.getDocumentElement();
-        Node customer = XPath.selectNode("//customer", root);
-        if (customer == null)
-            return null;
-        return new Customer(this, customer);
+    public Service(String user, String password, String productCode) {
+        this.user = user;
+        this.password = password;
+        this.productCode = productCode;
     }
 
     public Customer addCustomer(String custCode, String firstName, String lastName, String email, String plan) {
@@ -72,6 +58,21 @@ public class Service {
         return parseCustomer(resp);
     }
 
+    public HttpResponse get(String api) {
+        HttpResponse resp = WS.url(ROOT + api).authenticate(user, password).get();
+        CheddarGetterException.validate(resp);
+        return resp;
+    }
+
+    public Customer getCustomer(String custCode) {
+        HttpResponse resp = get("/customers/get/productCode/" + productCode + "/code/" + custCode);
+        return parseCustomer(resp);
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
     public List<Plan> getPricingPlans() {
         HttpResponse resp = get("/plans/get/productCode/" + productCode);
         List<Node> planNodes = XPath.selectNodes("/plans/plan", resp.getXml().getFirstChild());
@@ -83,22 +84,21 @@ public class Service {
         return plans;
     }
 
-    public String getUser() {
-        return user;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
     public String getProductCode() {
         return productCode;
     }
 
-    public HttpResponse get(String api) {
-        HttpResponse resp = WS.url(ROOT + api).authenticate(user, password).get();
-        CheddarGetterException.validate(resp);
-        return resp;
+    public String getUser() {
+        return user;
+    }
+
+    private Customer parseCustomer(HttpResponse resp) {
+        Document doc = resp.getXml();
+        Element root = doc.getDocumentElement();
+        Node customer = XPath.selectNode("//customer", root);
+        if (customer == null)
+            return null;
+        return new Customer(this, customer);
     }
 
     public HttpResponse post(String api, Map<String, Object> params) {
