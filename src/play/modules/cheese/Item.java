@@ -11,7 +11,7 @@ public class Item {
     private String code;
     private String id;
     private String name;
-    private int quantity;
+    private BigDecimal quantity;
     private int quantityIncluded;
     private boolean isPeriodic;
     private BigDecimal overageAmount;
@@ -21,7 +21,7 @@ public class Item {
         this.code = XPathUtil.selectText("@code", node);
         this.id = XPathUtil.selectText("@id", node);
         this.name = XPathUtil.selectText("name", node);
-        this.quantity = XPathUtil.selectInt("quantity", node);
+        this.quantity = XPathUtil.selectDecimal("quantity", node);
         this.quantityIncluded = XPathUtil.selectInt("quantityIncluded", node);
         this.isPeriodic = XPathUtil.selectBoolean("isPeriodic", node);
         this.overageAmount = XPathUtil.selectDecimal("overageAmount", node);
@@ -48,7 +48,7 @@ public class Item {
         return overageAmount;
     }
 
-    public int getQuantity() {
+    public BigDecimal getQuantity() {
         return quantity;
     }
 

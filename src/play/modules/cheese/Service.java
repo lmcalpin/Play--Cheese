@@ -13,6 +13,7 @@ import play.Play;
 import play.libs.WS;
 import play.libs.WS.HttpResponse;
 import play.libs.XPath;
+import play.modules.cheese.util.XPathUtil;
 
 public class Service {
     private String user;
@@ -55,7 +56,11 @@ public class Service {
                 params.put("subscription[ccZip]", card.getZip());
         }
         HttpResponse resp = post("/customers/new/productCode/" + productCode, params);
-        return parseCustomer(resp);
+        return new Customer(this, resp.getXml().getFirstChild());
+    }
+    
+    public void deleteCustomer(String custCode) {
+        get("/customers/delete/productCode/" + productCode + "/code/" + custCode);
     }
 
     public HttpResponse get(String api) {
@@ -64,9 +69,17 @@ public class Service {
         return resp;
     }
 
+    public List<Customer> getCustomers() {
+        HttpResponse resp = get("/customers/get/productCode/" + productCode);
+        Node root = resp.getXml().getFirstChild();
+        List<Customer> customers = XPathUtil.selectList("customer", root, this, Customer.class);
+        return customers;
+    }
+
     public Customer getCustomer(String custCode) {
         HttpResponse resp = get("/customers/get/productCode/" + productCode + "/code/" + custCode);
-        return parseCustomer(resp);
+        Customer customer = new Customer(this, XPath.selectNode("/customers/customer", resp.getXml().getFirstChild()));
+        return customer;
     }
 
     public String getPassword() {
@@ -75,13 +88,14 @@ public class Service {
 
     public List<Plan> getPricingPlans() {
         HttpResponse resp = get("/plans/get/productCode/" + productCode);
-        List<Node> planNodes = XPath.selectNodes("/plans/plan", resp.getXml().getFirstChild());
-        List<Plan> plans = new ArrayList<Plan>();
-        for (Node planNode : planNodes) {
-            Plan plan = new Plan(this, planNode);
-            plans.add(plan);
-        }
+        List<Plan> plans = XPathUtil.selectList("/plans/plan", resp.getXml().getFirstChild(), this, Plan.class);
         return plans;
+    }
+    
+    public Plan getPricingPlan(String planCode) {
+        HttpResponse resp = get("/plans/get/productCode/" + productCode + "/code/" + planCode);
+        Plan plan = new Plan(this, XPath.selectNode("/plans/plan", resp.getXml().getFirstChild()));
+        return plan;
     }
 
     public String getProductCode() {
@@ -90,15 +104,6 @@ public class Service {
 
     public String getUser() {
         return user;
-    }
-
-    private Customer parseCustomer(HttpResponse resp) {
-        Document doc = resp.getXml();
-        Element root = doc.getDocumentElement();
-        Node customer = XPath.selectNode("//customer", root);
-        if (customer == null)
-            return null;
-        return new Customer(this, customer);
     }
 
     public HttpResponse post(String api, Map<String, Object> params) {

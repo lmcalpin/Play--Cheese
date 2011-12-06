@@ -1,0 +1,45 @@
+h1. play--cheese
+
+play--cheese (http://github.com/lmcalpin/Play--Cheese) is a "Play! framework module":www.playframework.org 
+that adds some basic support for integration with the "CheddarGetter":http://zfer.us/KIt2E subscription 
+management service's API.
+
+h2. create a customer
+
+To use Play--Cheese, you must first configure your service.  This requires your CheddarGetter! credentials and
+the product code for your service.
+
+bc.  
+    Service sub = new Service("account", "password", "productCode");
+    
+Then you can create a customer by simply calling addCustomer and providing a plan code that you set up on the
+CheddarGetter! admin console.
+
+bc. 
+    Customer customer = sub.addCustomer(customerCode, firstName, lastName, email, planCode);
+    Customer customer = sub.addCustomer(customerCode, firstName, lastName, email, planCode, creditCard);
+
+You do not have to take in a credit card if the plan is free.  
+
+You can retrieve the customer you just created by calling getCustomer:
+    
+bc. 
+    Customer customer = sub.getCustomer("customerCode");
+    
+h2. usage tracking
+  
+To track item usage, call addItemUsage or setItemUsage on the Customer object.  This is used to track how much of
+a limited quantity of a particular feature that a customer has used.  For example, if you have a SocialMobileLocal
+startup that allows users 500 SpecialDealNotifications a month, you would set up a plan with an item with a limited
+quantity of 500, and every time the customer received a SuperDuperDealNotification, you would increment their use
+of that Item as follows:
+
+bc. 
+    customer.addItemUsage("SuperDuperDealNotification", BigDecimal.ONE);
+
+You can also just set the full amount as well:
+
+bc. 
+    customer.setItemUsage("SuperDuperDealNotification", new BigDecimal("499"));
+    
+   
