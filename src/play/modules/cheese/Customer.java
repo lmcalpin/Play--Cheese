@@ -136,11 +136,11 @@ public class Customer {
         this.firstName = firstName;
     }
 
-    public void setItemUsage(Item item, BigDecimal qty) {
-        setItemUsage(item.getCode(), qty);
+    public void updateItemUsage(Item item, BigDecimal qty) {
+        updateItemUsage(item.getCode(), qty);
     }
 
-    public void setItemUsage(String itemCode, BigDecimal qty) {
+    public void updateItemUsage(String itemCode, BigDecimal qty) {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("quantity", qty.toPlainString());
         service.post("/customers/set-item-quantity/productCode/" + service.getProductCode() + "/code/" + code + "/itemCode/" + itemCode, params);
