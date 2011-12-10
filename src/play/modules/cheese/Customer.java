@@ -82,6 +82,10 @@ public class Customer {
         return code;
     }
 
+    public CustomerProfile getProfile() {
+        return new CustomerProfile(this);
+    }
+    
     public String getCompany() {
         return company;
     }
@@ -124,18 +128,6 @@ public class Customer {
         service.post("/customers/add-item-quantity/productCode/" + service.getProductCode() + "/code/" + code + "/itemCode/" + itemCode, params);
     }
 
-    public void setCompany(String company) {
-        this.company = company;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
     public void updateItemUsage(Item item, BigDecimal qty) {
         updateItemUsage(item.getCode(), qty);
     }
@@ -144,10 +136,6 @@ public class Customer {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("quantity", qty.toPlainString());
         service.post("/customers/set-item-quantity/productCode/" + service.getProductCode() + "/code/" + code + "/itemCode/" + itemCode, params);
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
     }
 
     public void subscribe(String plan, CreditCard card) {
@@ -175,11 +163,12 @@ public class Customer {
         subscribe(plan, new CreditCard(firstName, lastName, ccNumber, expireMo, expireYear));
     }
 
-    public void updateCustomer() {
+    public void updateCustomer(CustomerProfile profile) {
         Map<String, Object> params = new HashMap<String, Object>();
-        params.put("firstName", firstName);
-        params.put("lastName", lastName);
-        params.put("email", email);
+        params.put("firstName", profile.getFirstName());
+        params.put("lastName", profile.getLastName());
+        params.put("email", profile.getEmail());
+        String company = profile.getCompany();
         if (company != null) {
             params.put("company", company);
         }
