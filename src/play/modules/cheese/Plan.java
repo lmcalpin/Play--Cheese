@@ -1,13 +1,11 @@
 package play.modules.cheese;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import org.w3c.dom.Node;
 
-import play.libs.XPath;
 import play.modules.cheese.util.XPathUtil;
 
 public class Plan {
@@ -35,23 +33,23 @@ public class Plan {
     public Plan(Service service, Node node) {
         this.code = XPathUtil.selectText("@code", node);
         this.id = XPathUtil.selectText("@id", node);
-        this.name  = XPathUtil.selectText("name", node);
-        this.description  = XPathUtil.selectText("description", node);
-        this.isActive   = XPathUtil.selectBoolean("isActive", node);
-        this.isFree   = XPathUtil.selectBoolean("isFree", node);
-        this.trialDays   = XPathUtil.selectInt("trialDays", node);
-        this.initialBillCount   = XPathUtil.selectInt("initialBillCount", node);
-        this.initialBillCountUnit   = XPathUtil.selectText("initialBillCountUnit", node);
-        this.billingFrequency  = XPathUtil.selectText("billingFrequency", node);
-        this.billingFrequencyPer  = XPathUtil.selectText("billingFrequencyPer", node);
-        this.billingFrequencyUnit  = XPathUtil.selectText("billingFrequencyUnit", node);
-        this.billingFrequencyQuantity  = XPathUtil.selectInt("billingFrequencyQuantity", node);
-        this.nextInvoiceBillingDatetime  = XPathUtil.selectDate("nextInvoiceBillingDatetime", node);
-        this.setupChargeCode  = XPathUtil.selectText("setupChargeCode", node);
-        this.setupChargeAmount  = XPathUtil.selectDecimal("setupChargeAmount", node);
-        this.createdDatetime  = XPathUtil.selectDate("createdDatetime", node);
-        this.recurringChargeCode  = XPathUtil.selectText("recurringChargeCode", node);
-        this.recurringChargeAmount  = XPathUtil.selectDecimal("recurringChargeAmount", node);
+        this.name = XPathUtil.selectText("name", node);
+        this.description = XPathUtil.selectText("description", node);
+        this.isActive = XPathUtil.selectBoolean("isActive", node);
+        this.isFree = XPathUtil.selectBoolean("isFree", node);
+        this.trialDays = XPathUtil.selectInt("trialDays", node);
+        this.initialBillCount = XPathUtil.selectInt("initialBillCount", node);
+        this.initialBillCountUnit = XPathUtil.selectText("initialBillCountUnit", node);
+        this.billingFrequency = XPathUtil.selectText("billingFrequency", node);
+        this.billingFrequencyPer = XPathUtil.selectText("billingFrequencyPer", node);
+        this.billingFrequencyUnit = XPathUtil.selectText("billingFrequencyUnit", node);
+        this.billingFrequencyQuantity = XPathUtil.selectInt("billingFrequencyQuantity", node);
+        this.nextInvoiceBillingDatetime = XPathUtil.selectDate("nextInvoiceBillingDatetime", node);
+        this.setupChargeCode = XPathUtil.selectText("setupChargeCode", node);
+        this.setupChargeAmount = XPathUtil.selectDecimal("setupChargeAmount", node);
+        this.createdDatetime = XPathUtil.selectDate("createdDatetime", node);
+        this.recurringChargeCode = XPathUtil.selectText("recurringChargeCode", node);
+        this.recurringChargeAmount = XPathUtil.selectDecimal("recurringChargeAmount", node);
         this.items = XPathUtil.selectList("items/item", node, service, Item.class);
     }
 

@@ -1,12 +1,10 @@
 package play.modules.cheese;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import org.w3c.dom.Node;
 
-import play.libs.XPath;
 import play.modules.cheese.util.XPathUtil;
 
 public class Subscription {

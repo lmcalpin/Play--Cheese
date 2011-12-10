@@ -1,12 +1,9 @@
 package play.modules.cheese;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import play.Play;
@@ -58,7 +55,7 @@ public class Service {
         HttpResponse resp = post("/customers/new/productCode/" + productCode, params);
         return new Customer(this, resp.getXml().getFirstChild());
     }
-    
+
     public void deleteCustomer(String custCode) {
         get("/customers/delete/productCode/" + productCode + "/code/" + custCode);
     }
@@ -69,6 +66,12 @@ public class Service {
         return resp;
     }
 
+    public Customer getCustomer(String custCode) {
+        HttpResponse resp = get("/customers/get/productCode/" + productCode + "/code/" + custCode);
+        Customer customer = new Customer(this, XPath.selectNode("/customers/customer", resp.getXml().getFirstChild()));
+        return customer;
+    }
+
     public List<Customer> getCustomers() {
         HttpResponse resp = get("/customers/get/productCode/" + productCode);
         Node root = resp.getXml().getFirstChild();
@@ -76,26 +79,20 @@ public class Service {
         return customers;
     }
 
-    public Customer getCustomer(String custCode) {
-        HttpResponse resp = get("/customers/get/productCode/" + productCode + "/code/" + custCode);
-        Customer customer = new Customer(this, XPath.selectNode("/customers/customer", resp.getXml().getFirstChild()));
-        return customer;
-    }
-
     public String getPassword() {
         return password;
+    }
+
+    public Plan getPricingPlan(String planCode) {
+        HttpResponse resp = get("/plans/get/productCode/" + productCode + "/code/" + planCode);
+        Plan plan = new Plan(this, XPath.selectNode("/plans/plan", resp.getXml().getFirstChild()));
+        return plan;
     }
 
     public List<Plan> getPricingPlans() {
         HttpResponse resp = get("/plans/get/productCode/" + productCode);
         List<Plan> plans = XPathUtil.selectList("/plans/plan", resp.getXml().getFirstChild(), this, Plan.class);
         return plans;
-    }
-    
-    public Plan getPricingPlan(String planCode) {
-        HttpResponse resp = get("/plans/get/productCode/" + productCode + "/code/" + planCode);
-        Plan plan = new Plan(this, XPath.selectNode("/plans/plan", resp.getXml().getFirstChild()));
-        return plan;
     }
 
     public String getProductCode() {

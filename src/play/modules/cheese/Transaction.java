@@ -1,6 +1,5 @@
 package play.modules.cheese;
 
-import java.math.BigDecimal;
 import java.util.Date;
 
 import org.w3c.dom.Node;
@@ -13,13 +12,13 @@ public class Transaction {
     private String parentId;
     private String memo;
     private Date createdDatetime;
-    
+
     public Transaction(Service service, Node node) {
         this.code = XPathUtil.selectText("@code", node);
         this.id = XPathUtil.selectText("@id", node);
         this.parentId = XPathUtil.selectText("parentId", node);
         this.memo = XPathUtil.selectText("memo", node);
-        this.createdDatetime  = XPathUtil.selectDate("createdDatetime", node);
+        this.createdDatetime = XPathUtil.selectDate("createdDatetime", node);
     }
 
     public String getCode() {
@@ -41,6 +40,5 @@ public class Transaction {
     public String getParentId() {
         return parentId;
     }
-
 
 }

@@ -8,7 +8,6 @@ import java.util.Map;
 
 import org.w3c.dom.Node;
 
-import play.libs.XPath;
 import play.modules.cheese.util.XPathUtil;
 
 public class Customer {
@@ -16,6 +15,8 @@ public class Customer {
     private String firstName;
     private String lastName;
     private String email;
+    private String company;
+    private String gatewayToken;
     private List<Subscription> subscriptions = new ArrayList<Subscription>();
     private Service service;
 
@@ -25,23 +26,44 @@ public class Customer {
         this.firstName = XPathUtil.selectText("firstName", node);
         this.lastName = XPathUtil.selectText("lastName", node);
         this.email = XPathUtil.selectText("email", node);
+        this.company = XPathUtil.selectText("company", node);
+        this.gatewayToken = XPathUtil.selectText("gatewayToken", node);
         this.subscriptions = XPathUtil.selectList("subscriptions/subscription", node, service, Subscription.class);
     }
 
-    public String getCode() {
-        return code;
+    public void addCharge(String chargeCode, int quantity, BigDecimal eachAmount, String description) {
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("chargeCode", chargeCode);
+        params.put("quantity", quantity);
+        params.put("eachAmount", eachAmount.toPlainString());
+        params.put("description", description);
+        service.post("/customers/add-charge/productCode/" + service.getProductCode() + "/code/" + code, params);
     }
 
-    public String getEmail() {
-        return email;
+    /**
+     * Used to track item usage.
+     * http://support.cheddargetter.com/kb/pricing-plans/pricing-plan-basics#tracked-items
+     * 
+     * @param item
+     */
+    public void addItemUsage(Item item, BigDecimal qty) {
+        addItemUsage(item.getCode(), qty);
     }
 
-    public String getFirstName() {
-        return firstName;
+    public void addItemUsage(String itemCode, BigDecimal qty) {
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("quantity", qty.toPlainString());
+        service.post("/customers/add-item-quantity/productCode/" + service.getProductCode() + "/code/" + code + "/itemCode/" + itemCode, params);
     }
 
-    public String getLastName() {
-        return lastName;
+    public void cancel() {
+        service.get("/customers/cancel/productCode/" + service.getProductCode() + "/code/" + code);
+    }
+
+    public void deleteCharge(String chargeId) {
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("chargeId", chargeId);
+        service.post("/customers/delete-charge/productCode/" + service.getProductCode() + "/code/" + code, params);
     }
 
     public List<String> getActivePlanCodes() {
@@ -56,12 +78,76 @@ public class Customer {
         return plans;
     }
 
+    public String getCode() {
+        return code;
+    }
+
+    public String getCompany() {
+        return company;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public String getGatewayToken() {
+        return gatewayToken;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public Service getService() {
+        return service;
+    }
+
     public List<Subscription> getSubscriptions() {
         return subscriptions;
     }
 
     public boolean hasActivePlanByCode(String plan) {
         return getActivePlanCodes().contains(plan);
+    }
+
+    public void reduceItemUsage(Item item, BigDecimal qty) {
+        reduceItemUsage(item.getCode(), qty);
+    }
+
+    public void reduceItemUsage(String itemCode, BigDecimal qty) {
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("quantity", qty.toPlainString());
+        service.post("/customers/add-item-quantity/productCode/" + service.getProductCode() + "/code/" + code + "/itemCode/" + itemCode, params);
+    }
+
+    public void setCompany(String company) {
+        this.company = company;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public void setItemUsage(Item item, BigDecimal qty) {
+        setItemUsage(item.getCode(), qty);
+    }
+
+    public void setItemUsage(String itemCode, BigDecimal qty) {
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("quantity", qty.toPlainString());
+        service.post("/customers/set-item-quantity/productCode/" + service.getProductCode() + "/code/" + code + "/itemCode/" + itemCode, params);
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public void subscribe(String plan, CreditCard card) {
@@ -89,57 +175,14 @@ public class Customer {
         subscribe(plan, new CreditCard(firstName, lastName, ccNumber, expireMo, expireYear));
     }
 
-    public void cancel() {
-        service.get("/customers/cancel/productCode/" + service.getProductCode() + "/code/" + code); 
-    }
-    
-    /**
-     * Used to track item usage.
-     * http://support.cheddargetter.com/kb/pricing-plans/pricing-plan-basics#tracked-items
-     * @param item
-     */
-    public void addItemUsage(Item item, BigDecimal qty) {
-        addItemUsage(item.getCode(), qty);
-    }
-    
-    public void addItemUsage(String itemCode, BigDecimal qty) {
+    public void updateCustomer() {
         Map<String, Object> params = new HashMap<String, Object>();
-        params.put("quantity", qty.toPlainString());
-        service.post("/customers/add-item-quantity/productCode/" + service.getProductCode() + "/code/" + code + "/itemCode/" + itemCode, params); 
-    }
-    
-    public void reduceItemUsage(Item item, BigDecimal qty) {
-        reduceItemUsage(item.getCode(), qty);
-    }
-    
-    public void reduceItemUsage(String itemCode, BigDecimal qty) {
-        Map<String, Object> params = new HashMap<String, Object>();
-        params.put("quantity", qty.toPlainString());
-        service.post("/customers/add-item-quantity/productCode/" + service.getProductCode() + "/code/" + code + "/itemCode/" + itemCode, params); 
-    }
-    
-    public void setItemUsage(Item item, BigDecimal qty) {
-        setItemUsage(item.getCode(), qty);
-    }
-    
-    public void setItemUsage(String itemCode, BigDecimal qty) {
-        Map<String, Object> params = new HashMap<String, Object>();
-        params.put("quantity", qty.toPlainString());
-        service.post("/customers/set-item-quantity/productCode/" + service.getProductCode() + "/code/" + code + "/itemCode/" + itemCode, params); 
-    }
-    
-    public void addCharge(String chargeCode, int quantity, BigDecimal eachAmount, String description) {
-        Map<String, Object> params = new HashMap<String, Object>();
-        params.put("chargeCode", chargeCode);
-        params.put("quantity", quantity);
-        params.put("eachAmount", eachAmount.toPlainString());
-        params.put("description", description);
-        service.post("/customers/add-charge/productCode/" + service.getProductCode() + "/code/" + code, params); 
-    }
-    
-    public void deleteCharge(String chargeId) {
-        Map<String, Object> params = new HashMap<String, Object>();
-        params.put("chargeId", chargeId);
-        service.post("/customers/delete-charge/productCode/" + service.getProductCode() + "/code/" + code, params); 
+        params.put("firstName", firstName);
+        params.put("lastName", lastName);
+        params.put("email", email);
+        if (company != null) {
+            params.put("company", company);
+        }
+        service.post("/customers/edit-customer/productCode/" + service.getProductCode() + "/code/" + code, params);
     }
 }

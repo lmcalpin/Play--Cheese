@@ -16,14 +16,14 @@ public class Invoice {
     private Date createdDatetime;
     private List<Transaction> transactions;
     private List<Charge> charges;
-    
+
     public Invoice(Service service, Node node) {
         this.code = XPathUtil.selectText("@code", node);
         this.id = XPathUtil.selectText("@id", node);
         this.type = XPathUtil.selectText("type", node);
         this.number = XPathUtil.selectInt("number", node);
-        this.billingDatetime  = XPathUtil.selectDate("billingDatetime", node);
-        this.createdDatetime  = XPathUtil.selectDate("createdDatetime", node);
+        this.billingDatetime = XPathUtil.selectDate("billingDatetime", node);
+        this.createdDatetime = XPathUtil.selectDate("createdDatetime", node);
         this.transactions = XPathUtil.selectList("transactions/transaction", node, service, Transaction.class);
         this.charges = XPathUtil.selectList("charges/charge", node, service, Charge.class);
     }

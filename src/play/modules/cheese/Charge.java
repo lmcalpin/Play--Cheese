@@ -11,11 +11,11 @@ public class Charge {
     private String code;
     private String id;
     private String type;
-    private int quantity; 
+    private int quantity;
     private BigDecimal eachAmount;
     private String description;
     private Date createdDatetime;
-    
+
     public Charge(Service service, Node node) {
         this.code = XPathUtil.selectText("@code", node);
         this.id = XPathUtil.selectText("@id", node);
@@ -23,7 +23,14 @@ public class Charge {
         this.quantity = XPathUtil.selectInt("quantity", node);
         this.eachAmount = XPathUtil.selectDecimal("eachAmount", node);
         this.description = XPathUtil.selectText("description", node);
-        this.createdDatetime  = XPathUtil.selectDate("createdDatetime", node);
+        this.createdDatetime = XPathUtil.selectDate("createdDatetime", node);
+    }
+
+    public Charge(String code, int quantity, BigDecimal eachAmount, String description) {
+        this.code = code;
+        this.quantity = quantity;
+        this.eachAmount = eachAmount;
+        this.description = description;
     }
 
     public String getCode() {
@@ -53,5 +60,5 @@ public class Charge {
     public String getType() {
         return type;
     }
-    
+
 }
