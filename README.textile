@@ -11,7 +11,19 @@ the product code for your service.
 
 bc.  
     Service sub = new Service("account", "password", "productCode");
+
+Your account and password could also come from your standard Play! application.conf:
+
+bc. 
+    cg.user=notactuallymyaccount@account.com
+    cg.password=notreallymypassword
     
+Then you simply have to create a Service object using the productCode you used when you set up the product on the
+CheddarGetter! admin console.
+
+bc.  
+    Service sub = new Service("productCode");
+
 Then you can create a customer by simply calling addCustomer and providing a plan code that you set up on the
 CheddarGetter! admin console.
 
